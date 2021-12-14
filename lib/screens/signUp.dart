@@ -201,7 +201,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     SizedBox(
                         height: 180,
                         child: Image.asset(
-                          "assets/money_icon.jpg",
+                          "assets/images/money_icon.JPG",
                           fit: BoxFit.contain,
                         )),
                     SizedBox(height: 45),

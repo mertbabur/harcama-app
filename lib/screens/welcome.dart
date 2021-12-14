@@ -20,10 +20,10 @@ class _WelcomeScreenState extends State<WelcomePage> {
   void initState() {
     _currentPage = 0;
     _slides = [
-      Slide("assets/img1.jpg", "All expenditures will be recorded"),
-      Slide("assets/img2.jpg",
+      Slide("assets/images/img1.JPG", "All expenditures will be recorded"),
+      Slide("assets/images/img2.JPG",
           "Amount of payment that must be made by everyone will be clearly defined."),
-      Slide("assets/img3.jpg", "Join Now, It's Free"),
+      Slide("assets/images/img3.JPG", "Join Now, It's Free"),
     ];
     _pageController = PageController(initialPage: _currentPage);
     super.initState();
