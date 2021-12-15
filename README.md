@@ -1,6 +1,6 @@
-# harcama_app
+# Harcama Takip Uygulaması
 
-A new Flutter application.
+Bu uygulama sayesinde giderlerin ortak karşılandığı evlerde kişilerin birbirlerine olan borçları ve alacak durumları kayıt altına alınıp kolayca takip edilebilecektir.
 
 ## ORGANİZASYON ŞEMASI
 
