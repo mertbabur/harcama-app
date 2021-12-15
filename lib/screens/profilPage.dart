@@ -13,13 +13,23 @@ class _ProfilPageState extends State<ProfilPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: HexColor('#00BFB2'),
-        title: Center(
-          child: Text(
-            'Profile',
-            style: TextStyle(color: Colors.white),
+        title: Text(
+          'Profile',
+          style: TextStyle(
+            color: Colors.white,
           ),
         ),
+        actions: [
+          SizedBox(
+            width: 50,
+            child: Icon(
+              Icons.person,
+              color: Colors.white,
+            ),
+          ),
+        ],
         elevation: 0.0,
       ),
       body: Body(),

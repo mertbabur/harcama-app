@@ -14,12 +14,11 @@ class _CreateHomePageState extends State<CreateHomePage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: HexColor('#00BFB2'),
-        title: Center(
-          child: Text(
-            'Create New Home',
-            style: TextStyle(color: Colors.white),
-          ),
+        title: Text(
+          'Create New Home',
+          style: TextStyle(color: Colors.white),
         ),
         elevation: 0.0,
       ),
@@ -44,7 +43,7 @@ class _BodyState extends State<Body> {
           child: SizedBox(
             height: 125,
             width: 125,
-                child: Icon(Icons.home, size: 50),
+            child: Icon(Icons.home, size: 50),
           ),
         ),
         ListView(

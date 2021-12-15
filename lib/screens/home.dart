@@ -1,10 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_harcama_app/screens/AddProduct.dart';
 import 'package:flutter_harcama_app/screens/PaymentPage.dart';
+import 'package:flutter_harcama_app/screens/notificationPage.dart';
 import 'package:flutter_harcama_app/screens/profilPage.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
@@ -66,7 +65,7 @@ class _HomeState extends State<Home> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.attach_money),
+              leading: const Icon(Icons.person),
               title: const Text(
                 'Profile',
                 style: TextStyle(fontWeight: FontWeight.bold),
@@ -83,8 +82,10 @@ class _HomeState extends State<Home> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               onTap: () {
-                //Navigator.push(context,
-                //    MaterialPageRoute(builder: (context) => Notifications()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => NotificationPage()));
               },
             ),
             ListTile(
