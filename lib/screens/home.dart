@@ -3,6 +3,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_harcama_app/screens/AddProduct.dart';
+import 'package:flutter_harcama_app/screens/PaymentPage.dart';
+import 'package:flutter_harcama_app/screens/profilPage.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class Home extends StatefulWidget {
@@ -60,6 +63,17 @@ class _HomeState extends State<Home> {
                   context,
                   MaterialPageRoute(builder: (context) => Home()),
                 );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.attach_money),
+              title: const Text(
+                'Profile',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => ProfilPage()));
               },
             ),
             ListTile(
@@ -165,13 +179,15 @@ class _HomeState extends State<Home> {
               child: const Icon(Icons.send, color: Color(0xff00BFB2)),
               label: 'Record a payment',
               onTap: () {
-                //Navigator.push(context, MaterialPageRoute(builder: (context)=>PaymentEkle()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => PaymentPage()));
               }),
           SpeedDialChild(
               child: const Icon(Icons.money, color: Color(0xff00BFB2)),
               label: 'Track a cost',
               onTap: () {
-                //Navigator.push(context, MaterialPageRoute(builder: (context)=>PaymentEkle()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => AddProduct()));
               }),
         ],
       ),

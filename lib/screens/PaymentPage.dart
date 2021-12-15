@@ -2,17 +2,16 @@
 
 import 'package:flutter/material.dart';
 
-
 //import 'Person.dart';
 
-class AddProduct extends StatefulWidget {
-  const AddProduct({Key? key}) : super(key: key);
+class PaymentPage extends StatefulWidget {
+  const PaymentPage({Key? key}) : super(key: key);
 
   @override
-  _AddProductState createState() => _AddProductState();
+  _PaymentPageState createState() => _PaymentPageState();
 }
 
-class _AddProductState extends State<AddProduct> {
+class _PaymentPageState extends State<PaymentPage> {
   var howMuchController = TextEditingController();
   var whatWasItController = TextEditingController();
   var dateController = TextEditingController();
@@ -36,11 +35,14 @@ class _AddProductState extends State<AddProduct> {
       appBar: AppBar(
         backgroundColor: Color(0xff00BFB2),
         title: Center(
-         child: Row(
+          child: Row(
             children: [
-              GestureDetector(child: Icon(Icons.arrow_back_ios, color: Colors.teal)),
-              SizedBox(width: 100),
-              Text("Make a payment", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
+              SizedBox(width: 60),
+              Text("Make a payment",
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20)),
             ],
           ),
         ),
@@ -51,7 +53,6 @@ class _AddProductState extends State<AddProduct> {
           child: Column(
             children: [
               // app bar
-
 
               //girdi
               Row(
@@ -73,7 +74,6 @@ class _AddProductState extends State<AddProduct> {
                       buildTitle("To:"),
                       SizedBox(height: 10),
                       buildWhoButton("MB"),
-
                     ],
                   ),
                 ],
@@ -112,8 +112,6 @@ class _AddProductState extends State<AddProduct> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           buildTitle("Current Balance"),
-
-
                         ],
                       ),
                       // part2
@@ -121,8 +119,6 @@ class _AddProductState extends State<AddProduct> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           buildTitle("x5"),
-
-
                         ],
                       ),
                     ],
@@ -136,8 +132,6 @@ class _AddProductState extends State<AddProduct> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           buildTitle("Current Balance"),
-
-
                         ],
                       ),
                       // part2
@@ -145,8 +139,6 @@ class _AddProductState extends State<AddProduct> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           buildTitle("x5"),
-
-
                         ],
                       ),
                     ],
@@ -162,8 +154,6 @@ class _AddProductState extends State<AddProduct> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           buildTitle("Current Balance"),
-
-
                         ],
                       ),
                       // part2
@@ -171,8 +161,6 @@ class _AddProductState extends State<AddProduct> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           buildTitle("x5"),
-
-
                         ],
                       ),
                     ],
@@ -186,8 +174,6 @@ class _AddProductState extends State<AddProduct> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           buildTitle("Current Balance"),
-
-
                         ],
                       ),
                       // part2
@@ -195,13 +181,10 @@ class _AddProductState extends State<AddProduct> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           buildTitle("x5"),
-
-
                         ],
                       ),
                     ],
                   ),
-
                 ],
               ),
               SizedBox(height: 100),
@@ -211,41 +194,38 @@ class _AddProductState extends State<AddProduct> {
                 child: ElevatedButton(
                   child: Text("Continue"),
                   style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    )
-                  ),
+                      shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  )),
                   onPressed: () {
                     print("tik");
                   },
                 ),
               ),
-
-
-
             ],
           ),
         ),
-
       ),
     );
   }
 }
 
-
-
-Widget buildTitle(String title){
-  return Text(title, style: TextStyle(color: Colors.grey),);
+Widget buildTitle(String title) {
+  return Text(
+    title,
+    style: TextStyle(color: Colors.grey),
+  );
 }
 
-Widget buildWhoButton(String title){
+Widget buildWhoButton(String title) {
   return GestureDetector(
     onTap: () {
       print("sdfsdfsdf");
     },
     child: Container(
       padding: EdgeInsets.symmetric(horizontal: 19, vertical: 22),
-      decoration: BoxDecoration(shape: BoxShape.circle, color: Color(0xFFE0ECF8)),
+      decoration:
+          BoxDecoration(shape: BoxShape.circle, color: Color(0xFFE0ECF8)),
       child: Text(title),
     ),
   );
