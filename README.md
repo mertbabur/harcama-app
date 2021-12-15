@@ -1,16 +1,19 @@
-# flutter_harcama_app
+# harcama_app
 
 A new Flutter application.
 
-## Getting Started
+## ORGANİZASYON ŞEMASI
 
-This project is a starting point for a Flutter application.
+![1](images/ev_ici_harcama_1.png)
 
-A few resources to get you started if this is your first Flutter project:
+## İŞ PAKETLERİ
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+![2](images/1.PNG)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![3](images/2.PNG)
+
+
+## PROTOTİP VİODESU
+
+https://youtu.be/99fDqD1mqLc
+
