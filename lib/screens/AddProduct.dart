@@ -8,7 +8,8 @@ import 'package:flutter/widgets.dart';
 import '../model/Person.dart';
 
 class AddProduct extends StatefulWidget {
-  const AddProduct({Key? key}) : super(key: key);
+  String email;
+  AddProduct({Key? key, required this.email}) : super(key: key);
 
   @override
   _AddProductState createState() => _AddProductState();

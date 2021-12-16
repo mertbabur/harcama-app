@@ -1,0 +1,39 @@
+{
+    "project_info": {
+      "project_number": "153597925906",
+      "project_id": "harcama-app",
+      "storage_bucket": "harcama-app.appspot.com"
+    },
+    "client": [
+      {
+        "client_info": {
+          "mobilesdk_app_id": "1:153597925906:android:a1946c6c5b520c42e896cb",
+          "android_client_info": {
+            "package_name": "com.example.flutter_harcama_app"
+          }
+        },
+        "oauth_client": [
+          {
+            "client_id": "153597925906-tiom4udsu49hiafgf7ganejemgov7uj7.apps.googleusercontent.com",
+            "client_type": 3
+          }
+        ],
+        "api_key": [
+          {
+            "current_key": "AIzaSyAeJ2ODEd3iuV-N-RfgrMWrFcUW0C92cG4"
+          }
+        ],
+        "services": {
+          "appinvite_service": {
+            "other_platform_oauth_client": [
+              {
+                "client_id": "153597925906-tiom4udsu49hiafgf7ganejemgov7uj7.apps.googleusercontent.com",
+                "client_type": 3
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "configuration_version": "1"
+  }

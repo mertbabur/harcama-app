@@ -8,7 +8,9 @@ import 'package:flutter_harcama_app/screens/profilPage.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class Home extends StatefulWidget {
-  const Home({
+  String email;
+  Home({
+    required this.email,
     Key? key,
   }) : super(key: key);
 
@@ -60,7 +62,7 @@ class _HomeState extends State<Home> {
               onTap: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => Home()),
+                  MaterialPageRoute(builder: (context) => Home(email:widget.email)),
                 );
               },
             ),
@@ -188,7 +190,7 @@ class _HomeState extends State<Home> {
               label: 'Track a cost',
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => AddProduct()));
+                    MaterialPageRoute(builder: (context) => AddProduct(email: widget.email),),);
               }),
         ],
       ),

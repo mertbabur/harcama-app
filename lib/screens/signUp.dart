@@ -1,8 +1,14 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter_harcama_app/model/user_model.dart';
+import 'package:flutter_harcama_app/screens/home.dart';
+import 'package:flutter_harcama_app/screens/logIn.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -12,8 +18,10 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  String? errorMessage;
+  String? errorMessage; //error mesajını gösterecek değişken
+  final _auth = FirebaseAuth.instance;
   final _formKey = GlobalKey<FormState>();
+  //bazı kontroller
   final firstNameEditingController = new TextEditingController();
   final secondNameEditingController = new TextEditingController();
   final emailEditingController = new TextEditingController();
@@ -22,7 +30,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final firstNameField = TextFormField(
+
+    final firstNameField = TextFormField( //ad bilgisi alanı
         autofocus: false,
         controller: firstNameEditingController,
         keyboardType: TextInputType.name,
@@ -49,7 +58,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
         ));
 
-    final secondNameField = TextFormField(
+    final secondNameField = TextFormField( //soyad bilgisi alanı
         autofocus: false,
         controller: secondNameEditingController,
         keyboardType: TextInputType.name,
@@ -72,7 +81,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
         ));
 
-    final emailField = TextFormField(
+    final emailField = TextFormField( //email bilgisi alanı
         autofocus: false,
         controller: emailEditingController,
         keyboardType: TextInputType.emailAddress,
@@ -99,7 +108,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
         ));
 
-    final passwordField = TextFormField(
+    final passwordField = TextFormField( //şifre bilgisi alanı
         autofocus: false,
         controller: passwordEditingController,
         obscureText: true,
@@ -125,7 +134,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
         ));
 
-    final confirmPasswordField = TextFormField(
+    final confirmPasswordField = TextFormField( //şifre doğrulama
         autofocus: false,
         controller: confirmPasswordEditingController,
         obscureText: true,
@@ -149,29 +158,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
         ));
 
-    final signUpButton = Material(
+    final signUpButton = Material( //kaydolma butonu
       elevation: 5,
       borderRadius: BorderRadius.circular(30),
       color: Color(0xff00BFB2),
-      child: GradientButton(
-        callback: () => {},
-        gradient: LinearGradient(colors: [Colors.cyan, Color(0xff00BFB2)]),
-        elevation: 0,
-        increaseHeightBy: 28,
-        increaseWidthBy: double.infinity,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(100),
-        ),
-        child: const Text(
-          "SIGN UP",
-          style: TextStyle(
-            letterSpacing: 4,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-      ),
+      child: MaterialButton(
+          padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+          minWidth: MediaQuery.of(context).size.width,
+          onPressed: () {
+            signUp(emailEditingController.text, passwordEditingController.text, _auth, errorMessage, _formKey, context, firstNameEditingController, secondNameEditingController);
+          },
+          child: Text(
+            "SignUp",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
+          )),
     );
 
     return Scaffold(
@@ -227,3 +229,64 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 }
+
+void signUp(String email, String password, FirebaseAuth _auth, String? errorMessage, GlobalKey<FormState> _formKey, BuildContext context, TextEditingController firstNameEditingController,
+    TextEditingController secondNameEditingController) async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        await _auth
+            .createUserWithEmailAndPassword(email: email, password: password)
+            .then((value) => {postDetailsToFirestore(_auth, firstNameEditingController, secondNameEditingController, context)})
+            .catchError((Object error) {
+          Fluttertoast.showToast(msg: error.toString());
+          print(error.toString());
+        });
+      } on FirebaseAuthException catch (error) {
+        switch (error.code) {
+          case "invalid-email":
+            errorMessage = "Your email address is wrong.";
+            break;
+          case "wrong-password":
+            errorMessage = "Your password is wrong.";
+            break;
+          case "user-not-found":
+            errorMessage = "User with this email doesn't exist.";
+            break;
+          case "user-disabled":
+            errorMessage = "User with this email has been disabled.";
+            break;
+          case "too-many-requests":
+            errorMessage = "Too many requests";
+            break;
+          case "operation-not-allowed":
+            errorMessage = "Signing in with Email and Password is not enabled.";
+            break;
+          default:
+            errorMessage = "An undefined Error happened.";
+        }
+        Fluttertoast.showToast(msg: errorMessage!);
+        print(error.code);
+      }
+    }
+  }
+  postDetailsToFirestore(FirebaseAuth _auth, TextEditingController firstNameEditingController, TextEditingController secondNameEditingController, BuildContext context) async { //burada firestore,user bilgileri çağrıldı ve işlem sonucunda değerler yollanıldı.
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    User? user = _auth.currentUser;
+    UserModel userModel = UserModel();
+    
+    userModel.email = user!.email;
+    userModel.uid = user.uid;
+    userModel.firstName = firstNameEditingController.text;
+    userModel.secondName = secondNameEditingController.text;
+
+    await firebaseFirestore
+        .collection("users")
+        .doc(user.uid)
+        .set(userModel.toMap());
+    Fluttertoast.showToast(msg: "Account created successfully :) ");
+
+    Navigator.pushAndRemoveUntil(
+        (context),
+        MaterialPageRoute(builder: (context) => LogInScreen()),
+        (route) => false);
+  }

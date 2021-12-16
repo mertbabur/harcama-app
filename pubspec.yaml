@@ -35,6 +35,9 @@ dependencies:
 
   flutter_speed_dial:
   gradient_widgets: ^0.6.0
+  cloud_firestore: 
+  firebase_auth: 
+  firebase_core: 
   fluttertoast: ^8.0.8
   flutter_svg: any
   hexcolor: ^2.0.5
