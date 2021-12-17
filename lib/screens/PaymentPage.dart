@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 //import 'Person.dart';
 
 class PaymentPage extends StatefulWidget {
-  const PaymentPage({Key? key}) : super(key: key);
+    String email;
+    PaymentPage({Key? key, required this.email}) : super(key: key);
+
 
   @override
   _PaymentPageState createState() => _PaymentPageState();

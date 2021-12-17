@@ -183,7 +183,7 @@ class _HomeState extends State<Home> {
               label: 'Record a payment',
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => PaymentPage()));
+                    MaterialPageRoute(builder: (context) => PaymentPage(email: widget.email)));
               }),
           SpeedDialChild(
               child: const Icon(Icons.money, color: Color(0xff00BFB2)),
