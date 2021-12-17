@@ -1,8 +1,11 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 class NotificationPage extends StatefulWidget {
-  const NotificationPage({Key? key}) : super(key: key);
+  String email;
+  NotificationPage({required this.email, Key? key}) : super(key: key);
 
   @override
   _NotificationPageState createState() => _NotificationPageState();

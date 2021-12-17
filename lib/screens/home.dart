@@ -41,10 +41,10 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const Align(
+                   Align(
                     alignment: Alignment(-1, 0),
                     child: Text(
-                      'USERNAME',
+                      widget.email,
                       style: TextStyle(
                         color: Colors.white,
                       ),
@@ -74,7 +74,7 @@ class _HomeState extends State<Home> {
               ),
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => ProfilPage()));
+                    MaterialPageRoute(builder: (context) => ProfilPage(email: widget.email)));
               },
             ),
             ListTile(
@@ -87,7 +87,7 @@ class _HomeState extends State<Home> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => NotificationPage()));
+                        builder: (context) => NotificationPage(email: widget.email,)));
               },
             ),
             ListTile(

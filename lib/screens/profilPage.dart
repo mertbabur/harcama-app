@@ -1,8 +1,12 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 class ProfilPage extends StatefulWidget {
+  String email;
+  ProfilPage({required this.email});
   @override
   State<ProfilPage> createState() => _ProfilPageState();
 }
@@ -32,12 +36,16 @@ class _ProfilPageState extends State<ProfilPage> {
         ],
         elevation: 0.0,
       ),
-      body: Body(),
+      body: Body(
+        email: widget.email,
+      ),
     );
   }
 }
 
 class Body extends StatefulWidget {
+  String? email;
+  Body({this.email});
   @override
   State<Body> createState() => _BodyState();
 }
@@ -46,8 +54,6 @@ class _BodyState extends State<Body> {
   String name = 'Buse';
 
   String surname = 'Karaman';
-
-  String email = 'mail@gmail.com';
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +143,7 @@ class _BodyState extends State<Body> {
                   ),
                   TextField(
                     decoration: InputDecoration(
-                      hintText: email,
+                      hintText: widget.email,
                       labelText: "Email",
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       labelStyle: TextStyle(fontSize: 14, color: Colors.black),
