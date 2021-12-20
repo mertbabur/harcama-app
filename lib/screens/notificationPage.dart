@@ -1,5 +1,6 @@
 // ignore_for_file: file_names
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 
@@ -24,16 +25,6 @@ class _NotificationPageState extends State<NotificationPage> {
           'Notifications',
           style: TextStyle(color: Colors.white),
         ),
-        actions: [
-          SizedBox(
-            width: 50,
-            child: Icon(
-              Icons.notifications,
-              color: Colors.white,
-            ),
-          ),
-        ],
-        elevation: 0.0,
       ),
       body: SingleChildScrollView(
           child: Body(
@@ -51,36 +42,45 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
-  late String homeName = "homeName";
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        ListView.separated(
-          itemCount: 10,
-          shrinkWrap: true,
-          padding: EdgeInsets.zero,
-          physics: const BouncingScrollPhysics(
-            parent: AlwaysScrollableScrollPhysics(),
-          ),
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(
-                '${widget.homeId}',
-                style:
-                    TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-              ),
-              subtitle: Text('Harcama yapıldı'),
-              onTap: () {},
-              enabled: false,
-            );
-          },
-          separatorBuilder: (context, index) {
-            return Divider();
-          },
-        )
-      ],
+    print(widget.homeId.toString());
+    return Expanded(
+      child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance.collection('Expenses').where('home_id', isEqualTo: widget.homeId.toString()).snapshots(),
+          builder: (BuildContext context,
+              AsyncSnapshot<QuerySnapshot> querySnapshot) {
+            if (querySnapshot.hasError) {
+              return Text("Some Error");
+            } else if (querySnapshot.connectionState ==
+                ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else {
+              final list = querySnapshot.data!.docs;
+              return ListView.builder(
+                itemCount: list.length,
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    leading: Icon(Icons.notifications),
+                    title: Text(
+                      '${list[index]['user_id']} kişisinden harcama!',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.black),
+                    ),
+                    subtitle: Text('${list[index]['description']} için ${list[index]['cost']} TL harcama yaptı'),
+                    onTap: () {},
+                    enabled: false,
+                  );
+                },
+                
+              );
+            }
+          }),
     );
   }
 }
