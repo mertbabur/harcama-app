@@ -219,7 +219,7 @@ class _HomeState extends State<Home> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddProduct(email: widget.email),
+                    builder: (context) => AddProduct(email: widget.email, home_id: home_id.toString()),
                   ),
                 );
               }),

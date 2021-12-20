@@ -1,61 +1,134 @@
 // ignore_for_file: file_names
 
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_harcama_app/model/Expenses.dart';
+import 'package:flutter_harcama_app/model/Debts.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
-import '../model/Person.dart';
 
 class AddProduct extends StatefulWidget {
   String email;
-  AddProduct({Key? key, required this.email}) : super(key: key);
+  String home_id;
+  AddProduct({Key? key, required this.email, required this.home_id}) : super(key: key);
 
   @override
   _AddProductState createState() => _AddProductState();
 }
 
 class _AddProductState extends State<AddProduct> {
+  FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   var howMuchController = TextEditingController();
   var whatWasItController = TextEditingController();
   var dateController = TextEditingController();
   var timeController = TextEditingController();
   bool personSelected = false;
   var personSelectedList = <bool>[];
+  String selectedUserMail = "";
+  var notSelectedUserMail = <String>[];
+  var moneyMapList = <Map<dynamic, dynamic>>[]; // seçilmeyen kullanılar için moneyState durumları, yani borçlular .
+  var selectedUserMoneyState = "";
+  var selecteduid = "";
   final _formKey = GlobalKey<FormState>();
 
-  Future<List<Person>> getAllPerson() async {
-    var personList = <Person>[];
-    var p1 = Person(1, "MB");
-    var p2 = Person(1, "MB");
-    var p3 = Person(1, "MB");
-    var p4 = Person(1, "MB");
-    var p5 = Person(1, "MB");
-    var p6 = Person(1, "MB");
-    var p7 = Person(2, "BD");
-    var p8 = Person(3, "FC");
 
-    personList.add(p1);
-    personList.add(p2);
-    personList.add(p4);
-    personList.add(p5);
-    personList.add(p6);
-    personList.add(p7);
-    personList.add(p8);
-    personSelectedList.add(false);
-    personSelectedList.add(false);
-    personSelectedList.add(false);
-    personSelectedList.add(false);
-    personSelectedList.add(false);
-    personSelectedList.add(false);
-    personSelectedList.add(false);
-    personSelectedList.add(false);
-
-    return personList;
+  /// Ad ve soyadın bas harflerini dondurur .
+  String convertToNameAndSurname(String firstName, String secondName) {
+    var firstLetterName = firstName.toUpperCase().trim().split("")[0];
+    var firstLetterSurName = secondName.toUpperCase().trim().split("")[0];
+    return firstLetterName + firstLetterSurName;
   }
+
+  /// Verilen array'in icini false ile doldurur .
+  void fillFalseList(List<bool> list, index){
+    if(list.length < index){
+      for(int i = 0; i < index; i++) {
+        list.add(false);
+      }
+    }
+  }
+
+  /// random string olusturur .
+  String generateRandomString (int len) {
+    var r = Random();
+    const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+    return List.generate(len, (index) => _chars[r.nextInt(_chars.length)]).join();
+  }
+
+  /// WhoPaiddeki tiklanmayan userlarin maillerini list'e atar .
+  void fillNotSelectedUserMail (List<DocumentSnapshot> listOfDocumentSnapForUsers) {
+    notSelectedUserMail.clear();
+    for(int i = 0; i < listOfDocumentSnapForUsers.length; i++){
+      var email = listOfDocumentSnapForUsers[i].get('email');
+      if(email != selectedUserMail){
+        notSelectedUserMail.add(email);
+      }
+    }
+  }
+
+  /// Expenses tablosuna gerekli bilgileri atar .
+  void postToFirestoreExpensesInfo(String id, Expenses expenses) async{
+    await _firebaseFirestore
+        .collection("Expenses")
+        .doc(id)
+        .set(expenses.toMap());
+  }
+
+  /// Borçlu olanları borç tablosuna ekler.
+  void postToFirestoreDebtsInfo(int userNumber, String cost, WriteBatch batch, String home_id) {
+    double debt  = double.parse(cost) / userNumber;
+    CollectionReference debts = _firebaseFirestore.collection('Debts');
+    //WriteBatch batch = _firebaseFirestore.batch();
+    for(int i = 0; i < notSelectedUserMail!.length; i++){
+      var debt_id = generateRandomString(30);
+      var debtModel = Debts(debt, notSelectedUserMail[i], widget.email, debt_id, home_id);
+      batch.set(debts.doc(debt_id), debtModel.toMap());
+    }
+    //batch.commit();
+  }
+
+  /// para durumunu günceller .
+  void postToFirestoreUpdateMoneyState(int userNumber, String cost, WriteBatch batch) {
+    CollectionReference users = _firebaseFirestore.collection('users');
+    //WriteBatch batch = _firebaseFirestore.batch();
+    // borçlular için ...
+    for (int i = 0; i < moneyMapList.length; i++) {
+      moneyMapList[i].forEach((uid, moneyState) {
+        print(uid + moneyState.toString());
+        double debtUserMoneyState = moneyState - (double.parse(cost) / userNumber);
+        batch.update(users.doc(uid), {"moneyState" : debtUserMoneyState});
+      });
+
+      // ödeme yapan kişi için ...
+      double payingUserMoneyState = double.parse(selectedUserMoneyState) + ((double.parse(cost) / userNumber) * (userNumber - 1));
+      batch.update(users.doc(selecteduid), {"moneyState" : payingUserMoneyState});
+
+      //batch.commit();
+    }
+  }
+
+  /// userlarin mailine karsilik gelen moneyStateleri tutan bir listi doldurur .
+  void getMoneyState (List<DocumentSnapshot> listOfDocumentSnapForUsers) {
+    moneyMapList.clear();
+    for(int i = 0; i < listOfDocumentSnapForUsers.length; i++){
+      var email = listOfDocumentSnapForUsers[i].get('email');
+      var uid = listOfDocumentSnapForUsers[i].get('uid');
+      if(email != selectedUserMail){
+        var moneyState = listOfDocumentSnapForUsers[i].get('moneyState');
+        moneyMapList.add({ uid : moneyState});
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
+    CollectionReference usersRef = _firebaseFirestore.collection("users");
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF00BFB2),
@@ -64,11 +137,15 @@ class _AddProductState extends State<AddProduct> {
         bottomOpacity: 0.0,
         title: Center(child: const Text("Cost Details")),
       ),
-      body: FutureBuilder<List<Person>>(
-          future: getAllPerson(),
-          builder: (context, snapshot) {
+      body: StreamBuilder<QuerySnapshot>(
+          stream: usersRef.where("home_id", isEqualTo: widget.home_id).snapshots(),
+          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            print("dfsfsdf" + widget.home_id);
             if (snapshot.hasData) {
-              var personList = snapshot.data;
+              List<DocumentSnapshot> listOfDocumentSnapForUsers = snapshot.data!.docs;
+              //print(UserModel.fromMap(listOfDocumentSnapForUsers[0]).toString());
+              fillFalseList(personSelectedList, listOfDocumentSnapForUsers.length);
+
               return SingleChildScrollView(
                 child: Form(
                   key: _formKey,
@@ -104,9 +181,13 @@ class _AddProductState extends State<AddProduct> {
                                 height: 70,
                                 child: ListView.builder(
                                   scrollDirection: Axis.horizontal,
-                                  itemCount: personList!.length,
+                                  itemCount: listOfDocumentSnapForUsers.length,
                                   itemBuilder: (context, index) {
-                                    var person = personList[index];
+                                    var user = listOfDocumentSnapForUsers[index];
+                                    var firstName = listOfDocumentSnapForUsers[index].get('firstName');
+                                    var secondName = listOfDocumentSnapForUsers[index].get('secondName');
+                                    var whoPaidText = convertToNameAndSurname(firstName, secondName);
+
                                     return GestureDetector(
                                       onTap: () {
                                         setState(() {
@@ -119,8 +200,14 @@ class _AddProductState extends State<AddProduct> {
                                           if (personSelectedList[index] ==
                                               false) {
                                             personSelectedList[index] = true;
+                                            selectedUserMail = listOfDocumentSnapForUsers[index].get('email');
+                                            selectedUserMoneyState = listOfDocumentSnapForUsers[index].get('moneyState').toString();
+                                            selecteduid = listOfDocumentSnapForUsers[index].get('uid');
                                           } else {
                                             personSelectedList[index] = false;
+                                            selectedUserMail = "";
+                                            selectedUserMoneyState = "";
+                                            selecteduid = "";
                                           }
                                         });
                                       },
@@ -135,7 +222,7 @@ class _AddProductState extends State<AddProduct> {
                                             child: Padding(
                                               padding: const EdgeInsets.all(15),
                                               child: Center(
-                                                  child: Text(person.title,
+                                                  child: Text(whoPaidText,
                                                       style: const TextStyle(
                                                           fontSize: 15))),
                                             ),
@@ -210,12 +297,22 @@ class _AddProductState extends State<AddProduct> {
                                   return;
                                 }
                                 if (_formKey.currentState!.validate()) {
-                                  print("tik" +
-                                      dateController.text +
-                                      " " +
-                                      whatWasItController.text +
-                                      " " +
-                                      howMuchController.text);
+                                  WriteBatch batch = _firebaseFirestore.batch();
+                                  var productId = generateRandomString(30);
+                                  var expenses = Expenses(productId, howMuchController.text, whatWasItController.text, widget.home_id, selectedUserMail, dateController.text);
+                                  fillNotSelectedUserMail(listOfDocumentSnapForUsers);
+                                  postToFirestoreExpensesInfo(productId, expenses);
+                                  postToFirestoreDebtsInfo(listOfDocumentSnapForUsers!.length, howMuchController.text, batch, widget.home_id);
+                                  getMoneyState(listOfDocumentSnapForUsers);
+                                  postToFirestoreUpdateMoneyState(listOfDocumentSnapForUsers!.length, howMuchController.text, batch);
+                                  batch.commit();
+                                  Fluttertoast.showToast(msg: "Product added is successfully ...");
+                                  setState(() {
+                                    howMuchController.text = "";
+                                    whatWasItController.text = "";
+                                    dateController.text = "";
+                                  });
+
                                 }
                               },
                             ),
