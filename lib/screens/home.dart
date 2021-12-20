@@ -1,10 +1,12 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_harcama_app/screens/AddProduct.dart';
 import 'package:flutter_harcama_app/screens/PaymentPage.dart';
 import 'package:flutter_harcama_app/screens/notificationPage.dart';
 import 'package:flutter_harcama_app/screens/profilPage.dart';
+import 'package:flutter_harcama_app/services/reviews.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class Home extends StatefulWidget {
@@ -19,6 +21,24 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  bool reviewFlag = false;
+  var reviews;
+  static var home_id;
+
+  @override
+  void initState() {
+    super.initState();
+    ReviewService()
+        .getLatestReview(widget.email.toString())
+        .then((QuerySnapshot docs) {
+      if (docs.docs.isNotEmpty) {
+        reviewFlag = true;
+        reviews = docs.docs[0].data();
+        home_id = reviews['home_id'];
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +61,7 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                   Align(
+                  Align(
                     alignment: Alignment(-1, 0),
                     child: Text(
                       widget.email,
@@ -62,7 +82,8 @@ class _HomeState extends State<Home> {
               onTap: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => Home(email:widget.email)),
+                  MaterialPageRoute(
+                      builder: (context) => Home(email: widget.email)),
                 );
               },
             ),
@@ -73,8 +94,10 @@ class _HomeState extends State<Home> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => ProfilPage(email: widget.email)));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ProfilPage(email: widget.email)));
               },
             ),
             ListTile(
@@ -87,7 +110,8 @@ class _HomeState extends State<Home> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => NotificationPage(email: widget.email,)));
+                        builder: (context) => NotificationPage(
+                            email: widget.email, homeId: home_id.toString())));
               },
             ),
             ListTile(
@@ -182,15 +206,22 @@ class _HomeState extends State<Home> {
               child: const Icon(Icons.send, color: Color(0xff00BFB2)),
               label: 'Record a payment',
               onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => PaymentPage(email: widget.email)));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            PaymentPage(email: widget.email)));
               }),
           SpeedDialChild(
               child: const Icon(Icons.money, color: Color(0xff00BFB2)),
               label: 'Track a cost',
               onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => AddProduct(email: widget.email),),);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddProduct(email: widget.email),
+                  ),
+                );
               }),
         ],
       ),

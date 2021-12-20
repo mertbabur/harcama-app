@@ -5,7 +5,8 @@ import 'package:hexcolor/hexcolor.dart';
 
 class NotificationPage extends StatefulWidget {
   String email;
-  NotificationPage({required this.email, Key? key}) : super(key: key);
+  String homeId;
+  NotificationPage({required this.email, required this.homeId});
 
   @override
   _NotificationPageState createState() => _NotificationPageState();
@@ -34,12 +35,17 @@ class _NotificationPageState extends State<NotificationPage> {
         ],
         elevation: 0.0,
       ),
-      body: SingleChildScrollView(child: Body()),
+      body: SingleChildScrollView(
+          child: Body(
+        homeId: widget.homeId,
+      )),
     );
   }
 }
 
 class Body extends StatefulWidget {
+  String? homeId;
+  Body({this.homeId});
   @override
   _BodyState createState() => _BodyState();
 }
@@ -61,7 +67,7 @@ class _BodyState extends State<Body> {
           itemBuilder: (context, index) {
             return ListTile(
               title: Text(
-                'Harcama',
+                '${widget.homeId}',
                 style:
                     TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
               ),

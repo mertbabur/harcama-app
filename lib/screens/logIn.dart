@@ -1,9 +1,10 @@
 // ignore_for_file: file_names
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_harcama_app/screens/home.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+
 import 'signUp.dart';
 
 class LogInScreen extends StatefulWidget {
@@ -22,8 +23,8 @@ class _LogInScreenState extends State<LogInScreen> {
 
   @override
   Widget build(BuildContext context) {
-
-    final emailField = TextFormField( //email bilgisi alanı
+    final emailField = TextFormField(
+        //email bilgisi alanı
         autofocus: false,
         controller: emailController,
         keyboardType: TextInputType.emailAddress,
@@ -50,7 +51,8 @@ class _LogInScreenState extends State<LogInScreen> {
           ),
         ));
 
-    final passwordField = TextFormField( //şifre bilgisi alanı
+    final passwordField = TextFormField(
+        //şifre bilgisi alanı
         autofocus: false,
         controller: passwordController,
         obscureText: true,
@@ -76,7 +78,8 @@ class _LogInScreenState extends State<LogInScreen> {
           ),
         ));
 
-    final loginButton = Material( //giriş yapma butonu
+    final loginButton = Material(
+      //giriş yapma butonu
       elevation: 5,
       borderRadius: BorderRadius.circular(30),
       color: Color(0xff00BFB2),
@@ -84,7 +87,8 @@ class _LogInScreenState extends State<LogInScreen> {
         padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         minWidth: MediaQuery.of(context).size.width,
         onPressed: () {
-          logIn(emailController.text, passwordController.text, _auth, errorMessage, _formKey, context);
+          logIn(emailController.text, passwordController.text, _auth,
+              errorMessage, _formKey, context);
         },
         child: Text(
           "LogIn",
@@ -153,43 +157,51 @@ class _LogInScreenState extends State<LogInScreen> {
   }
 }
 
-  void logIn(String email, String password, FirebaseAuth _auth, String? errorMessage, GlobalKey<FormState> _formKey, BuildContext context) async { //giriş yapma fonksiyonu
-    if (_formKey.currentState!.validate()) {
-      try {
-        await _auth
-            .signInWithEmailAndPassword(email: email, password: password)
-            .then((uid) => {
-                  Fluttertoast.showToast(msg: "Login Succesful"),
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => Home(email: email,))),
-                });
-      } on FirebaseAuthException catch (error) {
-        switch (error.code) {
-          case "invalid-email":
-            errorMessage = "Your email address is wrong.";
+void logIn(
+    String email,
+    String password,
+    FirebaseAuth _auth,
+    String? errorMessage,
+    GlobalKey<FormState> _formKey,
+    BuildContext context) async {
+  //giriş yapma fonksiyonu
+  if (_formKey.currentState!.validate()) {
+    try {
+      await _auth
+          .signInWithEmailAndPassword(email: email, password: password)
+          .then((uid) => {
+                Fluttertoast.showToast(msg: "Login Succesful"),
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => Home(
+                          email: email,
+                        ))),
+              });
+    } on FirebaseAuthException catch (error) {
+      switch (error.code) {
+        case "invalid-email":
+          errorMessage = "Your email address is wrong.";
 
-            break;
-          case "wrong-password":
-            errorMessage = "Your password is wrong.";
-            break;
-          case "user-not-found":
-            errorMessage = "User with this email doesn't exist.";
-            break;
-          case "user-disabled":
-            errorMessage = "User with this email has been disabled.";
-            break;
-          case "too-many-requests":
-            errorMessage = "Too many requests";
-            break;
-          case "operation-not-allowed":
-            errorMessage = "Signing in with Email and Password is not enabled.";
-            break;
-          default:
-            errorMessage = "An undefined Error happened.";
-        }
-        Fluttertoast.showToast(msg: errorMessage!);
-        print(error.code);
+          break;
+        case "wrong-password":
+          errorMessage = "Your password is wrong.";
+          break;
+        case "user-not-found":
+          errorMessage = "User with this email doesn't exist.";
+          break;
+        case "user-disabled":
+          errorMessage = "User with this email has been disabled.";
+          break;
+        case "too-many-requests":
+          errorMessage = "Too many requests";
+          break;
+        case "operation-not-allowed":
+          errorMessage = "Signing in with Email and Password is not enabled.";
+          break;
+        default:
+          errorMessage = "An undefined Error happened.";
       }
+      Fluttertoast.showToast(msg: errorMessage!);
+      print(error.code);
     }
   }
-
+}
