@@ -2,12 +2,16 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_harcama_app/model/chart_user_model.dart';
 import 'package:flutter_harcama_app/screens/AddProduct.dart';
 import 'package:flutter_harcama_app/screens/PaymentPage.dart';
 import 'package:flutter_harcama_app/screens/notificationPage.dart';
 import 'package:flutter_harcama_app/screens/profilPage.dart';
 import 'package:flutter_harcama_app/services/reviews.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
+
+import 'SettleUpPage.dart';
 
 class Home extends StatefulWidget {
   String email;
@@ -23,7 +27,23 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   bool reviewFlag = false;
   var reviews;
-  static var home_id;
+  var home_id;
+
+  List<charts.Series<ChartUserModel, String>>? _seriesBarData;
+  late List<ChartUserModel> myData;
+  _generateData(myData) {
+     _seriesBarData = <charts.Series<ChartUserModel, String>>[]; 
+    _seriesBarData!.add(charts.Series(
+        domainFn: (ChartUserModel chartUserModel, _) =>
+            chartUserModel.firstName.toString(),
+        measureFn: (ChartUserModel chartUserModel, _) =>
+            chartUserModel.moneyState,
+        colorFn: (ChartUserModel chartUserModel, _) =>
+            charts.ColorUtil.fromDartColor(Color(0xff00BFB2)),
+        id: 'UserModel',
+        data: myData,
+        labelAccessorFn: (ChartUserModel row, _) => '${row.moneyState}'));
+  }
 
   @override
   void initState() {
@@ -34,7 +54,10 @@ class _HomeState extends State<Home> {
       if (docs.docs.isNotEmpty) {
         reviewFlag = true;
         reviews = docs.docs[0].data();
-        home_id = reviews['home_id'];
+        setState(() {
+          home_id = reviews['home_id'].toString();
+          print(home_id + 'BUDUR');
+        });
       }
     });
   }
@@ -75,7 +98,7 @@ class _HomeState extends State<Home> {
             ),
             ListTile(
               leading: const Icon(Icons.home),
-              title: const Text(
+              title: Text(
                 'Home',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
@@ -157,43 +180,34 @@ class _HomeState extends State<Home> {
         shadowColor: Colors.white,
         foregroundColor: Colors.white,
       ),
-      body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              height: 300,
-              color: Colors.grey,
-            ),
-            const SizedBox(height: 20),
-            OutlinedButton(
-              onPressed: () {
-                //  Navigator.push(
-                //      context,
-                //      MaterialPageRoute(
-                //          builder: (context) => SettleUpScreen()));
-              },
-              child: ListTile(
-                leading: Icon(
-                  Icons.verified,
-                  size: 40,
-                  color: Color(0xff00BFB2),
-                ),
-                title: Text(
-                  'SETTLE UP',
-                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
-                ),
+      body: Column(
+        children: [
+          Container(child: _buildBody(context) , height: 280,),
+          OutlinedButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => SettleUpPage(
+                            home_id: home_id,
+                          )));
+            },
+            child: ListTile(
+              leading: Icon(
+                Icons.verified,
+                color: Color(0xff00BFB2),
+              ),
+              title: Text(
+                'SETTLE UP',
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       bottomNavigationBar: BottomAppBar(
         color: Color(0xff00BFB2),
         shape: const CircularNotchedRectangle(),
-        child: Container(
-          height: 50.0,
-        ),
       ),
       floatingActionButton: SpeedDial(
         backgroundColor: Color(0xff00BFB2),
@@ -219,7 +233,8 @@ class _HomeState extends State<Home> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddProduct(email: widget.email, home_id: home_id.toString()),
+                    builder: (context) => AddProduct(
+                        email: widget.email, home_id: home_id.toString()),
                   ),
                 );
               }),
@@ -227,6 +242,56 @@ class _HomeState extends State<Home> {
       ),
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterDocked,
+    );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .where('home_id', isEqualTo: home_id)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return LinearProgressIndicator();
+        } else {
+          List<ChartUserModel> chartUserModel = snapshot.data!.docs
+              .map((documentSnapshot) =>
+                  ChartUserModel.fromMap(documentSnapshot.data() as Map<String, dynamic>))
+              .toList();
+          return _buildChart(context, chartUserModel);
+        }
+      },
+    );
+
+  }
+
+  Widget _buildChart(
+      BuildContext context, List<ChartUserModel> chartUserModel) {
+    myData = chartUserModel;
+    _generateData(myData);
+    return Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Center(
+        child: Column(
+          children: [
+            Expanded(
+              child: charts.BarChart(
+              
+                _seriesBarData!,
+                animate: true,
+                animationDuration: Duration(seconds: 2),
+                behaviors: [
+                  charts.DatumLegend(
+                    entryTextStyle: charts.TextStyleSpec(
+                        color: charts.MaterialPalette.black, fontSize: 15),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
