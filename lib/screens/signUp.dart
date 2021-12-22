@@ -9,6 +9,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'ChooseScreen.dart';
+
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -287,6 +289,6 @@ void signUp(String email, String password, FirebaseAuth _auth, String? errorMess
 
     Navigator.pushAndRemoveUntil(
         (context),
-        MaterialPageRoute(builder: (context) => LogInScreen()),
+        MaterialPageRoute(builder: (context) => ChooseScreen(email: user.email.toString(), uid: user.uid.toString())),
         (route) => false);
   }
