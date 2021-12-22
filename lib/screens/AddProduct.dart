@@ -131,11 +131,11 @@ class _AddProductState extends State<AddProduct> {
     CollectionReference usersRef = _firebaseFirestore.collection("users");
     return Scaffold(
       appBar: AppBar(
+        foregroundColor: Colors.white,
+        centerTitle: true,
         backgroundColor: const Color(0xFF00BFB2),
-        automaticallyImplyLeading: false,
         elevation: 0.0,
-        bottomOpacity: 0.0,
-        title: Center(child: const Text("Cost Details")),
+        title: const Text("Cost Details", style: TextStyle(color: Colors.white)),
       ),
       body: StreamBuilder<QuerySnapshot>(
           stream: usersRef.where("home_id", isEqualTo: widget.home_id).snapshots(),
@@ -283,7 +283,7 @@ class _AddProductState extends State<AddProduct> {
                             width: double.infinity,
                             height: 50,
                             child: ElevatedButton(
-                              child: Text("Continue"),
+                              child: Text("Continue", style: TextStyle(color: Colors.white)),
                               style: ElevatedButton.styleFrom(
                                   primary: Color(0xFF00BFB2),
                                   shape: RoundedRectangleBorder(

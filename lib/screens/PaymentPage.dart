@@ -11,6 +11,8 @@ import 'package:flutter_harcama_app/model/Expenses.dart';
 import 'package:flutter_harcama_app/model/Debts.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+import 'home.dart';
+
 class PaymentPage extends StatefulWidget {
   String email;
   String home_id;
@@ -125,10 +127,10 @@ class _PaymentPageState extends State<PaymentPage> {
 
     return Scaffold(
       appBar: AppBar(
+        foregroundColor: Colors.white,
+        centerTitle: true,
         backgroundColor: const Color(0xFF00BFB2),
-        automaticallyImplyLeading: false,
         elevation: 0.0,
-        bottomOpacity: 0.0,
         title: Center(child: const Text("Cost Details")),
       ),
       body: StreamBuilder<QuerySnapshot>(
@@ -454,7 +456,7 @@ class _PaymentPageState extends State<PaymentPage> {
                             width: double.infinity,
                             height: 50,
                             child: ElevatedButton(
-                              child: Text("Continue"),
+                              child: Text("Continue", style: TextStyle(color: Colors.white)),
                               style: ElevatedButton.styleFrom(
                                   primary: Color(0xFF00BFB2),
                                   shape: RoundedRectangleBorder(
@@ -480,7 +482,13 @@ class _PaymentPageState extends State<PaymentPage> {
                                       1, howMuchController.text, batch);
                                   batch.commit();
                                   Fluttertoast.showToast(
-                                      msg: "Product added is successfully ...");
+                                      msg: "Payment recorded is successfully ...");
+
+                                  Navigator.pushAndRemoveUntil(
+                                      (context),
+                                      MaterialPageRoute(builder: (context) => Home(email: widget.email.toString())),
+                                          (route) => false);
+
                                   /*setState(() {
                                     howMuchController.text = "";
                                     whatWasItController.text = "";

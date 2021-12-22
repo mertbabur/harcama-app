@@ -1,12 +1,14 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_harcama_app/model/chart_user_model.dart';
 import 'package:flutter_harcama_app/screens/AddProduct.dart';
 import 'package:flutter_harcama_app/screens/PaymentPage.dart';
 import 'package:flutter_harcama_app/screens/notificationPage.dart';
 import 'package:flutter_harcama_app/screens/profilPage.dart';
+import 'package:flutter_harcama_app/screens/welcome.dart';
 import 'package:flutter_harcama_app/services/reviews.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
@@ -28,6 +30,7 @@ class _HomeState extends State<Home> {
   bool reviewFlag = false;
   var reviews;
   var home_id;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   List<charts.Series<ChartUserModel, String>>? _seriesBarData;
   late List<ChartUserModel> myData;
@@ -56,7 +59,6 @@ class _HomeState extends State<Home> {
         reviews = docs.docs[0].data();
         setState(() {
           home_id = reviews['home_id'].toString();
-          print(home_id + 'BUDUR');
         });
       }
     });
@@ -88,6 +90,16 @@ class _HomeState extends State<Home> {
                     alignment: Alignment(-1, 0),
                     child: Text(
                       widget.email,
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Align(
+                    alignment: Alignment(-1, 0),
+                    child: Text(
+                      "HOME ID: " + home_id,
                       style: TextStyle(
                         color: Colors.white,
                       ),
@@ -138,34 +150,18 @@ class _HomeState extends State<Home> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.attach_money),
-              title: const Text(
-                'Spendings',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                //Navigator.push(context,
-                //    MaterialPageRoute(builder: (context) => Spendings()));
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text(
-                'Settings',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                //Navigator.push(context,
-                //    MaterialPageRoute(builder: (context) => Settings()));
-              },
-            ),
-            ListTile(
               leading: const Icon(Icons.logout),
               title: const Text(
                 'Log Out',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               onTap: () {
+                _auth.signOut();
+                Navigator.pushAndRemoveUntil(
+                    (context),
+                    MaterialPageRoute(builder: (context) => WelcomePage()),
+                        (route) => false);
+
                 //Navigator.push(context,
                 //    MaterialPageRoute(builder: (context) => Notifications()));
               },
@@ -175,7 +171,7 @@ class _HomeState extends State<Home> {
       ),
       appBar: AppBar(
         centerTitle: true,
-        title: const Text("ACASA"),
+        title: const Text("EXPENSE APP"),
         backgroundColor: const Color(0xff00BFB2),
         shadowColor: Colors.white,
         foregroundColor: Colors.white,
@@ -209,12 +205,13 @@ class _HomeState extends State<Home> {
         ],
       ),
       bottomNavigationBar: BottomAppBar(
+        child: Container(height: 50),
         color: Color(0xff00BFB2),
         shape: const CircularNotchedRectangle(),
       ),
       floatingActionButton: SpeedDial(
         backgroundColor: Color(0xff00BFB2),
-        child: Icon(Icons.add),
+        child: Icon(Icons.add, color: Colors.white),
         overlayOpacity: 0.5,
         spacing: 15,
         spaceBetweenChildren: 15,

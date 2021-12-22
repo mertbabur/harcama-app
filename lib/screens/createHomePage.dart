@@ -1,8 +1,13 @@
+// ignore_for_file: file_names
+
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_harcama_app/model/HomeModel.dart';
 import 'package:hexcolor/hexcolor.dart';
+
+import 'home.dart';
 
 class CreateHomePage extends StatefulWidget {
   String email;
@@ -27,12 +32,15 @@ class _CreateHomePageState extends State<CreateHomePage> {
         ),
         elevation: 0.0,
       ),
-      body: Body(),
+      body: Body(uid: widget.uid, email: widget.email),
     );
   }
 }
 
 class Body extends StatefulWidget {
+  String? uid;
+  String? email;
+  Body({this.uid, this.email});
   @override
   _BodyState createState() => _BodyState();
 }
@@ -47,11 +55,18 @@ class _BodyState extends State<Body> {
     return List.generate(len, (index) => _chars[r.nextInt(_chars.length)]).join();
   }
 
-  void postToFirestoreHomeInfo(String id, String homeName) async{
+  void postToFirestoreHomeInfo(HomeModel homeModel) async{
     await _firebaseFirestore
-        .collection("Home")
-        .doc(id)
-        .set(homeName.toMap());
+        .collection("Homes")
+        .doc(homeModel.home_id)
+        .set(homeModel.toMap());
+  }
+
+  void updateToFirestoreHomeIdForUser(String uid, String home_id){
+    CollectionReference userRef = FirebaseFirestore.instance.collection('users');
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    batch.update(userRef.doc(uid), {'home_id' : home_id});
+    batch.commit();
   }
 
   late String homeName = "homeName";
@@ -104,7 +119,14 @@ class _BodyState extends State<Body> {
                     ),
                     onPressed: () {
                       var home_id = generateRandomString(8);
-                      postToFirestoreHomeInfo(home_id,homeNameController.text);
+                      HomeModel homeModel = HomeModel(home_id, homeNameController.text);
+                      postToFirestoreHomeInfo(homeModel);
+                      updateToFirestoreHomeIdForUser(widget.uid.toString(), home_id);
+                      Navigator.pushAndRemoveUntil(
+                          (context),
+                          MaterialPageRoute(builder: (context) => Home(email: widget.email.toString())),
+                              (route) => false);
+
                     },
                     child: Text(
                       'SAVE',
