@@ -32,7 +32,7 @@ class _HomeState extends State<Home> {
   List<charts.Series<ChartUserModel, String>>? _seriesBarData;
   late List<ChartUserModel> myData;
   _generateData(myData) {
-     _seriesBarData = <charts.Series<ChartUserModel, String>>[]; 
+    _seriesBarData = <charts.Series<ChartUserModel, String>>[];
     _seriesBarData!.add(charts.Series(
         domainFn: (ChartUserModel chartUserModel, _) =>
             chartUserModel.firstName.toString(),
@@ -182,7 +182,10 @@ class _HomeState extends State<Home> {
       ),
       body: Column(
         children: [
-          Container(child: _buildBody(context) , height: 280,),
+          Container(
+            child: _buildBody(context),
+            height: 280,
+          ),
           OutlinedButton(
             onPressed: () {
               Navigator.push(
@@ -223,8 +226,8 @@ class _HomeState extends State<Home> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            PaymentPage(email: widget.email)));
+                        builder: (context) => PaymentPage(
+                            email: widget.email, home_id: home_id.toString())));
               }),
           SpeedDialChild(
               child: const Icon(Icons.money, color: Color(0xff00BFB2)),
@@ -256,14 +259,13 @@ class _HomeState extends State<Home> {
           return LinearProgressIndicator();
         } else {
           List<ChartUserModel> chartUserModel = snapshot.data!.docs
-              .map((documentSnapshot) =>
-                  ChartUserModel.fromMap(documentSnapshot.data() as Map<String, dynamic>))
+              .map((documentSnapshot) => ChartUserModel.fromMap(
+                  documentSnapshot.data() as Map<String, dynamic>))
               .toList();
           return _buildChart(context, chartUserModel);
         }
       },
     );
-
   }
 
   Widget _buildChart(
@@ -277,7 +279,6 @@ class _HomeState extends State<Home> {
           children: [
             Expanded(
               child: charts.BarChart(
-              
                 _seriesBarData!,
                 animate: true,
                 animationDuration: Duration(seconds: 2),
