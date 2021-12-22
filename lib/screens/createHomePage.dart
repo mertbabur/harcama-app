@@ -1,8 +1,13 @@
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 class CreateHomePage extends StatefulWidget {
-  const CreateHomePage({Key? key}) : super(key: key);
+  String email;
+  String uid;
+  CreateHomePage({Key? key, required this.email, required this.uid}) : super(key: key);
 
   @override
   _CreateHomePageState createState() => _CreateHomePageState();
@@ -33,6 +38,22 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
+   FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+   TextEditingController homeNameController = TextEditingController();
+
+   String generateRandomString (int len) {
+    var r = Random();
+    const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+    return List.generate(len, (index) => _chars[r.nextInt(_chars.length)]).join();
+  }
+
+  void postToFirestoreHomeInfo(String id, String homeName) async{
+    await _firebaseFirestore
+        .collection("Home")
+        .doc(id)
+        .set(homeName.toMap());
+  }
+
   late String homeName = "homeName";
   @override
   Widget build(BuildContext context) {
@@ -58,8 +79,8 @@ class _BodyState extends State<Body> {
               child: Column(
                 children: [
                   TextField(
+                    controller : homeNameController,
                     decoration: InputDecoration(
-                      hintText: homeName,
                       labelText: "Home Name",
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       labelStyle: TextStyle(
@@ -81,7 +102,10 @@ class _BodyState extends State<Body> {
                       padding: EdgeInsets.symmetric(horizontal: 50),
                       backgroundColor: HexColor('#00BFB2'),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      var home_id = generateRandomString(8);
+                      postToFirestoreHomeInfo(home_id,homeNameController.text);
+                    },
                     child: Text(
                       'SAVE',
                       style: TextStyle(

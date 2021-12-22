@@ -53,7 +53,7 @@ class _ChooseScreenState extends State<ChooseScreen> {
                     onPressed: (){
                       Navigator.pushAndRemoveUntil(
                           (context),
-                          MaterialPageRoute(builder: (context) => CreateHomePage()),
+                          MaterialPageRoute(builder: (context) => CreateHomePage(email: widget.email, uid: widget.uid)),
                               (route) => false);
                     },
                     style: ElevatedButton.styleFrom(
