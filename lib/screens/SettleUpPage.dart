@@ -12,7 +12,6 @@ class SettleUpPage extends StatefulWidget {
 }
 
 class _SettleUpPageState extends State<SettleUpPage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,40 +22,42 @@ class _SettleUpPageState extends State<SettleUpPage> {
         shadowColor: Colors.white,
         foregroundColor: Colors.white,
       ),
-      body: StreamBuilder(
-          stream: FirebaseFirestore.instance.collection('Debts').where('home_id', isEqualTo: widget.home_id).snapshots(),
-          builder:
-              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(),
+      body: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('Debts')
+              .where('home_id', isEqualTo: widget.home_id.toString())
+              .snapshots(),
+          builder: (BuildContext context,
+              AsyncSnapshot<QuerySnapshot> querySnapshot) {
+            if (querySnapshot.hasError) {
+              return Text("Some Error");
+            } else if (querySnapshot.connectionState ==
+                ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else {
+              final list = querySnapshot.data!.docs;
+              return ListView.builder(
+                itemCount: list.length,
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    leading: Icon(Icons.notifications),
+                    title: Text(
+                      '${list[index]['fromWho']} owes ${list[index]['toWho']}',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.black),
+                    ),
+                    subtitle: Text('Amount: ${list[index]['cost']}'),
+                    onTap: () {},
+                    enabled: false,
+                  );
+                },
               );
             }
-            return ListView(
-              children: snapshot.data!.docs.map((document) {
-                return ListTile(
-                  trailing: IconButton(
-                    icon: Icon(Icons.delete),
-                    onPressed: () async {
-                      FirebaseFirestore.instance
-                          .collection('Debts')
-                          .get()
-                          .then((value) {
-                        for (var element in value.docs) {
-                          FirebaseFirestore.instance
-                              .collection('Debts')
-                              .doc(element.id)
-                              .delete();
-                        }
-                      });
-                    },
-                  ),
-                  leading: Icon(Icons.attach_money),
-                  title: Text(
-                      '${document['fromWho']} owes ${document['toWho']} ${document['cost']}'),
-                );
-              }).toList(),
-            );
           }),
     );
   }

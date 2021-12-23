@@ -137,7 +137,7 @@ class _HomeState extends State<Home> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => NotificationPage(
-                            email: widget.email, homeId: home_id.toString())));
+                            email: widget.email, homeId: home_id)));
               },
             ),
             ListTile(
@@ -193,6 +193,42 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
+          StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('users')
+                  .where('home_id', isEqualTo: home_id.toString())
+                  .snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> querySnapshot) {
+                if (querySnapshot.hasError) {
+                  return Text("Some Error");
+                } else if (querySnapshot.connectionState ==
+                    ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                } else {
+                  final list = querySnapshot.data!.docs;
+                  return ListView.builder(                   
+                    itemCount: list.length,
+                    shrinkWrap: true,
+                    padding: EdgeInsets.zero,
+                    physics: const BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics(),
+                    ),
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        leading: Icon(Icons.monetization_on),
+                        title: Text(
+                          'Budget of ${list[index]['firstName']}: ${list[index]['moneyState']}',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.black87),
+                        ),
+                        onTap: () {},
+                        enabled: false,
+                      );
+                    },
+                  );
+                }
+              }),
         ],
       ),
       bottomNavigationBar: BottomAppBar(
