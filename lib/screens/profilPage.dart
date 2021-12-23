@@ -8,7 +8,8 @@ import 'package:hexcolor/hexcolor.dart';
 
 class ProfilPage extends StatefulWidget {
   String email;
-  ProfilPage({required this.email});
+  String home_id;
+  ProfilPage({required this.email, required this.home_id});
   @override
   State<ProfilPage> createState() => _ProfilPageState();
 }
@@ -42,6 +43,7 @@ class _ProfilPageState extends State<ProfilPage> {
       ),
       body: Body(
         email: widget.email,
+        home_id:widget.home_id,
       ),
     );
   }
@@ -49,7 +51,8 @@ class _ProfilPageState extends State<ProfilPage> {
 
 class Body extends StatefulWidget {
   String? email;
-  Body({this.email});
+  String? home_id;
+  Body({this.email, this.home_id});
   @override
   State<Body> createState() => _BodyState();
 }
@@ -91,12 +94,16 @@ class _BodyState extends State<Body> {
             uid = info[0]['uid'].toString();
             
             return Column(
+              
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Divider(
+                  height: 30,
+                ),
                 Center(
                   child: SizedBox(
-                    height: 125,
-                    width: 125,
+                    height: 100,
+                    width: 100,
                     child: Stack(
                       fit: StackFit.expand,
                       clipBehavior: Clip.none,
@@ -105,33 +112,12 @@ class _BodyState extends State<Body> {
                           backgroundImage:
                               AssetImage("assets/images/profil.jpg"),
                         ),
-                        Positioned(
-                          right: -12,
-                          bottom: 0,
-                          child: SizedBox(
-                            height: 46,
-                            width: 46,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                primary: Color(0xFFF5F6F9),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(50),
-                                  side: BorderSide(color: Colors.white),
-                                ),
-                                padding: EdgeInsets.zero,
-                              ),
-                              onPressed: () {},
-                              child:
-                                  SvgPicture.asset("assets/icons/camera.svg"),
-                            ),
-                          ),
-                        )
                       ],
                     ),
                   ),
                 ),
                 Divider(
-                  height: 50,
+                  height: 30,
                 ),
                 ListView(
                   shrinkWrap: true,
@@ -160,7 +146,7 @@ class _BodyState extends State<Body> {
                             keyboardType: TextInputType.text,
                           ),
                           Divider(
-                            height: 30,
+                            height: 20,
                           ),
                           TextField(
                             controller: surnameController,
@@ -178,7 +164,7 @@ class _BodyState extends State<Body> {
                             keyboardType: TextInputType.text,
                           ),
                           Divider(
-                            height: 30,
+                            height: 20,
                           ),
                           TextField(
                             enabled :false,
@@ -194,7 +180,23 @@ class _BodyState extends State<Body> {
                             keyboardType: TextInputType.emailAddress,
                           ),
                           Divider(
-                            height: 70,
+                            height: 20,
+                          ),
+                          TextField(
+                            enabled :false,
+                            decoration: InputDecoration(
+                              hintText: widget.home_id,
+                              labelText: 'Home ID',
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.always,
+                              labelStyle:
+                                  TextStyle(fontSize: 14, color: Colors.black),
+                              border: UnderlineInputBorder(),
+                            ),
+                            keyboardType: TextInputType.emailAddress,
+                          ),
+                          Divider(
+                            height: 20,
                           ),
                           OutlinedButton(
                             style: OutlinedButton.styleFrom(

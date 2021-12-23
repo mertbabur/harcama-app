@@ -72,8 +72,8 @@ class _BodyState extends State<Body> {
       children: <Widget>[
         const Center(
           child: SizedBox(
-            height: 125,
-            width: 125,
+            height: 50,
+            width: 50,
             child: Icon(Icons.home, size: 50),
           ),
         ),

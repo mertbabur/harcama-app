@@ -29,6 +29,7 @@ class _NotificationPageState extends State<NotificationPage> {
       body: SingleChildScrollView(
           child: Body(
         homeId: widget.homeId,
+        email: widget.email,
       )),
     );
   }
@@ -36,7 +37,8 @@ class _NotificationPageState extends State<NotificationPage> {
 
 class Body extends StatefulWidget {
   String? homeId;
-  Body({this.homeId});
+  String? email;
+  Body({this.homeId, this.email});
   @override
   _BodyState createState() => _BodyState();
 }
@@ -44,12 +46,12 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   @override
   Widget build(BuildContext context) {
-    print(widget.homeId.toString());
+
     return Expanded(
       child: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance.collection('Expenses').where('home_id', isEqualTo: widget.homeId.toString()).snapshots(),
           builder: (BuildContext context,
-              AsyncSnapshot<QuerySnapshot> querySnapshot) {
+              AsyncSnapshot<QuerySnapshot> querySnapshot) {             
             if (querySnapshot.hasError) {
               return Text("Some Error");
             } else if (querySnapshot.connectionState ==
@@ -65,7 +67,7 @@ class _BodyState extends State<Body> {
                   parent: AlwaysScrollableScrollPhysics(),
                 ),
                 itemBuilder: (context, index) {
-                  return ListTile(
+                  return ListTile(           
                     leading: Icon(Icons.notifications),
                     title: Text(
                       '${list[index]['user_id']} kişisinden harcama!',

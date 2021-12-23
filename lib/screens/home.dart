@@ -27,9 +27,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  bool reviewFlag = false;
   var reviews;
   var home_id;
+  var firstName;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   List<charts.Series<ChartUserModel, String>>? _seriesBarData;
@@ -55,7 +55,6 @@ class _HomeState extends State<Home> {
         .getLatestReview(widget.email.toString())
         .then((QuerySnapshot docs) {
       if (docs.docs.isNotEmpty) {
-        reviewFlag = true;
         reviews = docs.docs[0].data();
         setState(() {
           home_id = reviews['home_id'].toString();
@@ -96,15 +95,7 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Align(
-                    alignment: Alignment(-1, 0),
-                    child: Text(
-                      "HOME ID: " + home_id,
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+
                 ],
               ),
             ),
@@ -132,7 +123,7 @@ class _HomeState extends State<Home> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => ProfilPage(email: widget.email)));
+                        builder: (context) => ProfilPage(email: widget.email, home_id: home_id,)));
               },
             ),
             ListTile(
